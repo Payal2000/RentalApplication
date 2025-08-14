@@ -1,5 +1,5 @@
 import { openai } from '@ai-sdk/openai';
-import { generateText, tool, convertToModelMessages } from 'ai';
+import {  tool, convertToModelMessages, streamText, UIMessage } from 'ai';
 import { z } from 'zod';
 
 // Define the Zillow property tool schema
@@ -50,14 +50,20 @@ const zillowPropertyTool = tool({
   },
 });
 
-export async function POST(req: Request) {
-  const { messages } = await req.json();
 
-  const result = await generateText({
+
+// Allow streaming responses up to 30 seconds
+export const maxDuration = 30;
+
+export async function POST(req: Request) {
+  const { messages }: { messages: UIMessage[] } = await req.json();
+
+  const result = streamText({
     model: openai('gpt-4o'),
-    messages: messages,
-    // tools: { zillowPropertyTool },
+    system: 'You are a helpful assistant.',
+    tools: { zillowPropertyTool },
+    messages: convertToModelMessages(messages),
   });
 
-  return Response.json(result);
+  return result.toUIMessageStreamResponse();
 }

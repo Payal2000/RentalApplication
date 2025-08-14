@@ -11,6 +11,7 @@ interface ChatInterfaceProps {
   showBackButton?: boolean;
 }
 
+
 export default function ChatInterface({ onBack, showBackButton = false }: ChatInterfaceProps) {
   const { messages, sendMessage, status } = useChat();
   
@@ -37,6 +38,7 @@ export default function ChatInterface({ onBack, showBackButton = false }: ChatIn
       setInput('');
     }
   };
+  
 
   return (
     <div className="flex flex-col h-screen bg-gray-50">
